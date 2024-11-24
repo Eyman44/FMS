@@ -13,16 +13,17 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final _usernameController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   final registerController = Get.put(Register()); // استدعاء الكونترولر
 
-  bool _isPasswordVisible = false; // State for password visibility
-  bool _isConfirmPasswordVisible =
-      false; // State for confirm password visibility
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -60,17 +61,47 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     const SizedBox(height: 20),
                     TextFormField(
-                      controller: _usernameController,
+                      controller: _firstNameController,
                       decoration: const InputDecoration(
-                        labelText: 'Username',
+                        labelText: 'First Name',
                         labelStyle: TextStyle(color: AppColor.purple),
                         border: OutlineInputBorder(),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your username';
-                        } else if (value.length <= 4) {
-                          return 'Username must be more than 4 characters';
+                          return 'Please enter your first name';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 15),
+                    TextFormField(
+                      controller: _lastNameController,
+                      decoration: const InputDecoration(
+                        labelText: 'Last Name',
+                        labelStyle: TextStyle(color: AppColor.purple),
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your last name';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 15),
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: const InputDecoration(
+                        labelText: 'Email',
+                        labelStyle: TextStyle(color: AppColor.purple),
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your email';
+                        } else if (!GetUtils.isEmail(value)) {
+                          return 'Please enter a valid email';
                         }
                         return null;
                       },
@@ -137,21 +168,20 @@ class _RegisterPageState extends State<RegisterPage> {
                       },
                     ),
                     const SizedBox(height: 20),
-                    // Centered Register button with custom color
                     Center(
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColor.orange,
-                          minimumSize:
-                              const Size(200, 50), // Make the button wider
+                          minimumSize: const Size(200, 50),
                         ),
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
                             registerController.register(
-                              _usernameController.text,
+                              _firstNameController.text,
+                              _lastNameController.text,
+                              _emailController.text,
                               _passwordController.text,
                             );
-                           
                           }
                         },
                         child: const Text('Register'),
@@ -164,17 +194,14 @@ class _RegisterPageState extends State<RegisterPage> {
                           Get.to(() => const LoginPage());
                         },
                         child: const Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment.center, // Center the row
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              'Have an account? ', // Display "Login" as the text for navigation
-                              style: TextStyle(
-                                color: AppColor.purple,
-                              ),
+                              'Have an account? ',
+                              style: TextStyle(color: AppColor.purple),
                             ),
                             Text(
-                              'Login', // Display "Login" as the text for navigation
+                              'Login',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: AppColor.purple,

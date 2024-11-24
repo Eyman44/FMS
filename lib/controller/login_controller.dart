@@ -8,14 +8,14 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginController extends GetxController {
-  Future login(String username, String password) async {
+  Future login(String email, String password) async {
     var response = await http.post(
       Uri.parse("$baseurl/user/login"),
       headers: {
         'Accept': 'application/json',
       },
       body: <String, String>{
-        "username": username,
+        "email": email,
         "password": password,
       },
     );
@@ -43,28 +43,10 @@ class LoginController extends GetxController {
 
       Get.off(() => const GroupPage());
     } else {
-      // Get.defaultDialog(
-      //     title: "Login Faild",
-      //     titleStyle: const TextStyle(
-      //         color: AppColor.title,
-      //         fontSize: 18,
-      //         fontWeight: FontWeight.bold,
-      //         fontFamily: " Poppins-Regular.ttf"),
-      //     middleText: "Login Faild",
-      //     middleTextStyle: const TextStyle(
-      //       color: AppColor.purple,
-      //       fontFamily: " Poppins-Regular.ttf",
-      //       fontSize: 15,
-      //     ),
-      //     buttonColor: AppColor.orange,
-      //     confirmTextColor: Colors.white,
-      //     onConfirm: () {
-      //       Get.back();
-      //     });
       Get.snackbar(
         "Message",
-        "$response1[message]",
-        // response1,
+        response1['message'],
+      
         backgroundColor: AppColor.orange,
         snackPosition: SnackPosition.TOP,
         duration: const Duration(seconds: 3),

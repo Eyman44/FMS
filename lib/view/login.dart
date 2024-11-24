@@ -13,8 +13,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class LoginPageState extends State<LoginPage> {
-  final _usernameController = TextEditingController(text: "eyman");
-  final _passwordController = TextEditingController(text: "eymaneyman");
+  final _usernameController = TextEditingController(text: "eyman@gmail.com");
+  final _passwordController = TextEditingController(text: "eymaneymanm");
   final _formKey = GlobalKey<FormState>();
 
   final loginController = Get.put(LoginController()); // استدعاء الكونترولر
@@ -59,14 +59,12 @@ class LoginPageState extends State<LoginPage> {
                     TextFormField(
                       controller: _usernameController,
                       decoration: const InputDecoration(
-                        labelText: 'Username',
+                        labelText: 'email',
                         border: OutlineInputBorder(),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your username';
-                        } else if (value.length <= 4) {
-                          return 'Username must be more than 4 characters';
+                          return 'Please enter your email';
                         }
                         return null;
                       },
