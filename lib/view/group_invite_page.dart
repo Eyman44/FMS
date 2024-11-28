@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constant/color.dart';
+import 'package:get/get.dart';
+import '../controller/group_invite_controller.dart';
 
 class GroupInviteScreen extends StatelessWidget {
-  final List<Map<String, String>> invites = [
-    {"name": "John Doe", "group": "Flutter Developers"},
-    {"name": "Jane Smith", "group": "Mobile App Enthusiasts"},
-    {"name": "Sara Lee", "group": "Tech Innovators"},
-  ];
+  final GroupInviteController controller = Get.put(GroupInviteController());
 
   GroupInviteScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    controller.fetchGroupInvites();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -20,98 +20,103 @@ class GroupInviteScreen extends StatelessWidget {
         ),
         backgroundColor: AppColor.purple,
       ),
-      body: ListView.builder(
-        itemCount: invites.length,
-        itemBuilder: (context, index) {
-          var invite = invites[index];
-          return Padding(
-            padding:
-                const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-            child: Card(
-              elevation: 5,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // صورة للمستخدم (افتراضية)
-                    CircleAvatar(
-                      radius: 30,
-                      backgroundColor: AppColor.purple,
-                      child: Text(
-                        invite["name"]!.substring(0, 1),
-                        style:
-                            const TextStyle(fontSize: 24, color: Colors.white),
+      body: Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (controller.invites.isEmpty) {
+          return const Center(
+            child: Text(
+              "No invitations found.",
+              style: TextStyle(fontSize: 18, color: Colors.grey),
+            ),
+          );
+        }
+
+        return ListView.builder(
+          itemCount: controller.invites.length,
+          itemBuilder: (context, index) {
+            var invite = controller.invites[index];
+            var groupName = invite['Group'] != null ? invite['Group']['name'] : "Unknown Group";
+            var userName = invite['Group'] != null ? invite['Group']['User']['firstName'] + " " + invite['Group']['User']['lastName'] : "No user info";
+            var message = invite['message'] ?? "No message provided";
+
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+              child: Card(
+                elevation: 5,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Message: $message",
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      const SizedBox(height: 10),
+                      Text(
+                        "Group: $groupName",
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        "User: $userName",
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          // اسم الشخص
-                          Text(
-                            invite["name"]!,
-                            style: const TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
+                          TextButton(
+                            onPressed: () {
+                              print("Invitation declined: ${invite['id']}");
+                              
+                            },
+                            child: const Text(
+                              "Reject",
+                              style: TextStyle(color: Colors.red),
+                            ),
                           ),
-                          const SizedBox(height: 5),
-                          // اسم المجموعة
-                          Text(
-                            "Group: ${invite["group"]}",
-                            style: const TextStyle(
-                                fontSize: 16, color: Colors.grey),
-                          ),
-                          const SizedBox(height: 10),
-                          // أزرار القبول والرفض
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              // زر رفض
-                              TextButton(
-                                onPressed: () {
-                                  // من هنا يمكن تنفيذ وظيفة الرفض
-                                  print(
-                                      "Invitation declined by ${invite['name']}");
-                                },
-                                child: const Text(
-                                  "Reject",
-                                  style: TextStyle(color: Colors.red),
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              // زر قبول
-                              ElevatedButton(
-                                onPressed: () {
-                                  // من هنا يمكن تنفيذ وظيفة القبول
-                                  print(
-                                      "Invitation accepted by ${invite['name']}");
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColor.iconColor,
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 20, vertical: 12),
-                                ),
-                                child: const Text(
-                                  "Accept",
-                                  style: TextStyle(color: Colors.green),
-                                ),
-                              ),
-                            ],
+                          const SizedBox(width: 10),
+                          ElevatedButton(
+                            onPressed: () {
+                              print("Invitation accepted: ${invite['id']}");
+
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColor.iconColor,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 12),
+                            ),
+                            child: const Text(
+                              "Accept",
+                              style: TextStyle(color: Colors.green),
+                            ),
                           ),
                         ],
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-          );
-        },
-      ),
+            );
+          },
+        );
+      }),
     );
   }
 }
