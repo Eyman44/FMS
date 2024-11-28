@@ -1,8 +1,7 @@
 import 'dart:convert';
-import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constant/color.dart';
 import 'package:flutter_application_1/main.dart';
-import 'package:flutter_application_1/view/files_page.dart';
+import 'package:flutter_application_1/view/groups.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,6 +12,7 @@ class LoginController extends GetxController {
       Uri.parse("$baseurl/user/login"),
       headers: {
         'Accept': 'application/json',
+        
       },
       body: <String, String>{
         "email": email,
@@ -41,7 +41,7 @@ class LoginController extends GetxController {
         duration: const Duration(seconds: 3),
       );
 
-      Get.off(() => const GroupPage());
+      Get.off(() =>  GroupPage());
     } else {
       Get.snackbar(
         "Message",

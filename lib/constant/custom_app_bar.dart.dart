@@ -1,0 +1,82 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_application_1/constant/color.dart';
+import 'package:flutter_application_1/view/group_invite_page.dart';
+import 'package:flutter_application_1/view/upload_request_page.dart';
+
+class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final String title; // إذا كنت تريد تخصيص اسم التطبيق
+  final double elevation; // تخصيص ارتفاع الظل إذا لزم الأمر
+
+  const CustomAppBar({
+    super.key,
+    this.title = "Fily", // افتراضي
+    this.elevation = 10.0, // افتراضي
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      elevation: elevation,
+      shadowColor: Colors.grey.withOpacity(0.5),
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // اسم التطبيق
+          Row(
+            children: [
+              const Icon(Icons.group, color: AppColor.title),
+              const SizedBox(width: 8),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: AppColor.title,
+                ),
+              ),
+            ],
+          ),
+
+          // الأزرار
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              TextButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => GroupInviteScreen()),
+                  );
+                },
+                icon: const Icon(Icons.person_add,
+                    color: AppColor.title, size: 20),
+                label: const Text(
+                  "Join Invitations",
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 14),
+                ),
+              ),
+              TextButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => RequestsPage()),
+                  );
+                },
+                icon: const Icon(Icons.upload, color: AppColor.title, size: 20),
+                label: const Text(
+                  "Upload Requests",
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 14),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}

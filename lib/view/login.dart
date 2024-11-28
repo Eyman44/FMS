@@ -13,8 +13,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class LoginPageState extends State<LoginPage> {
-  final _usernameController = TextEditingController(text: "eyman@gmail.com");
-  final _passwordController = TextEditingController(text: "eymaneymanm");
+  final _usernameController = TextEditingController(text: "user11@gmail.com");
+  final _passwordController = TextEditingController(text: "12345678");
   final _formKey = GlobalKey<FormState>();
 
   final loginController = Get.put(LoginController()); // استدعاء الكونترولر

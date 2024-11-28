@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        fontFamily: AppFonts.font, // تعيين الـ fontFamily هنا لجميع النصوص
+        fontFamily: AppFonts.font,
       ),
       home: const LoginPage(),
     );

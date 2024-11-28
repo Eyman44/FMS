@@ -8,15 +8,15 @@ import 'package:flutter_application_1/view/member_page.dart';
 import 'package:flutter_application_1/view/upload_request_page.dart';
 import 'package:get/get.dart';
 
-class GroupPage extends StatefulWidget {
-  const GroupPage({super.key});
+class GroupDetailesPage extends StatefulWidget {
+  const GroupDetailesPage({super.key});
 
   @override
   // ignore: library_private_types_in_public_api
   _GroupPageState createState() => _GroupPageState();
 }
 
-class _GroupPageState extends State<GroupPage> {
+class _GroupPageState extends State<GroupDetailesPage> {
   final List<String> imageUrls = [
     AppImageAsset.slider1,
     AppImageAsset.slider2,
