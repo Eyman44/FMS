@@ -7,5 +7,7 @@ class AppColor {
   static const Color title = Color.fromARGB(255,42, 31, 86);
   static const Color iconColor=Color.fromARGB(255, 214, 214, 238);
 
+  static const Color green = Color.fromARGB(0, 41, 184, 41);
+
 
 }

@@ -82,9 +82,8 @@ class GroupInviteScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           TextButton(
-                            onPressed: () {
-                              print("Invitation declined: ${invite['id']}");
-                              
+                            onPressed: () async {
+                              await controller.rejectInvite(invite['id']);
                             },
                             child: const Text(
                               "Reject",
@@ -93,9 +92,8 @@ class GroupInviteScreen extends StatelessWidget {
                           ),
                           const SizedBox(width: 10),
                           ElevatedButton(
-                            onPressed: () {
-                              print("Invitation accepted: ${invite['id']}");
-
+                            onPressed: () async {
+                              await controller.acceptInvite(invite['id']);
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColor.iconColor,
