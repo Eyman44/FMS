@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constant/color.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -27,9 +29,7 @@ class GroupInviteController extends GetxController {
         },
       );
 
-      print("Response status: ${response.statusCode}");
       print("Response body: ${response.body}");
-      print("token: $token");
 
       if (response.statusCode == 200) {
         var jsonResponse = jsonDecode(response.body);
@@ -55,6 +55,92 @@ class GroupInviteController extends GetxController {
       );
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> acceptInvite(var inviteId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      var token = prefs.getString("auth");
+
+      if (token == null) {
+        throw Exception("No authentication token found.");
+      }
+
+      var response = await http.get(
+        Uri.parse("$baseurl/user/accept/$inviteId"),
+        headers: {
+          'Authorization': token,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var jsonResponse = jsonDecode(response.body);
+        if (jsonResponse['status'] == 'Success') {
+          // إزالة الدعوة المقبولة من القائمة
+          invites.removeWhere((invite) => invite['id'] == inviteId);
+          Get.snackbar(
+            "Success",
+            jsonResponse['data'],
+            backgroundColor: AppColor.green,
+            snackPosition: SnackPosition.TOP,
+          );
+        } else {
+          throw Exception("Failed to accept the invitation.");
+        }
+      } else {
+        throw Exception("Error occurred while accepting the invitation.");
+      }
+    } catch (e) {
+      Get.snackbar(
+        "Error",
+        "Something went wrong: $e",
+        backgroundColor: AppColor.orange,
+        snackPosition: SnackPosition.TOP,
+      );
+    }
+  }
+
+  Future<void> rejectInvite(var inviteId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      var token = prefs.getString("auth");
+
+      if (token == null) {
+        throw Exception("No authentication token found.");
+      }
+
+      var response = await http.get(
+        Uri.parse("$baseurl/user/decline/$inviteId"),
+        headers: {
+          'Authorization': token,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var jsonResponse = jsonDecode(response.body);
+        if (jsonResponse['status'] == 'Success') {
+          // إزالة الدعوة المرفوضة من القائمة
+          invites.removeWhere((invite) => invite['id'] == inviteId);
+          Get.snackbar(
+            "Success",
+            jsonResponse['data'],
+            backgroundColor: AppColor.green,
+            snackPosition: SnackPosition.TOP,
+          );
+        } else {
+          throw Exception("Failed to reject the invitation.");
+        }
+      } else {
+        throw Exception("Error occurred while rejecting the invitation.");
+      }
+    } catch (e) {
+      Get.snackbar(
+        "Error",
+        "Something went wrong: $e",
+        backgroundColor: AppColor.orange,
+        snackPosition: SnackPosition.TOP,
+      );
     }
   }
 }
