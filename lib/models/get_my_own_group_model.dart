@@ -35,9 +35,10 @@ class OwnGroup {
     return OwnGroup(
       id: json['id'] ?? 0, // استخدام قيمة افتراضية إذا كانت null
       name: json['name'] ?? "Unknown", // قيمة افتراضية
-      image: json['image'] == null || json['image'].isEmpty
-          ? "https://cdn.elearningindustry.com/wp-content/uploads/2020/02/what-to-check-before-an-online-course-purchase.png"
-          : "$baseurl/images/groups/" + json['image'],
+      image:"https://cdn.elearningindustry.com/wp-content/uploads/2020/02/what-to-check-before-an-online-course-purchase.png",
+      //  json['image'] == null || json['image'].isEmpty
+      //     ? "https://cdn.elearningindustry.com/wp-content/uploads/2020/02/what-to-check-before-an-online-course-purchase.png"
+      //     : "$baseurl/images/groups/" + json['image'],
       isPublic: json['isPublic'] ?? false, // قيمة افتراضية
     );
   }

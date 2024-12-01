@@ -22,23 +22,27 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           // اسم التطبيق
-          Row(
-            children: [
-              const Icon(Icons.group, color: AppColor.title),
-              const SizedBox(width: 8),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: AppColor.title,
+          Flexible(
+            child: Row(
+              children: [
+                const Icon(Icons.group, color: AppColor.title),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: AppColor.title,
+                    ),
+                    overflow: TextOverflow.ellipsis, // لمنع overflow
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
 
           // الأزرار
           Row(
-            mainAxisAlignment: MainAxisAlignment.end,
             children: [
               TextButton.icon(
                 onPressed: () {

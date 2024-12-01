@@ -10,9 +10,12 @@ import 'package:http/http.dart' as http;
 class GroupController extends GetxController {
   List<MyGroup> myGroups = [];
   List<PublicGroup> publicGroups = [];
+  List<MyOwnGroup> myOwnnGroups = [];
   List<OwnGroup> myOwnGroups = [];
-  var isLoading = true.obs;
 
+  List<Map<String, String>> filteredGroups = <Map<String, String>>[].obs;
+  var isLoading = true.obs;
+  var isSearching = false.obs;
   Future<void> fetchGroups() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -40,6 +43,7 @@ class GroupController extends GetxController {
           GroupData groupData = GroupData.fromJson(data['data']);
           myGroups = groupData.myGroups;
           publicGroups = groupData.publicGroups;
+          myOwnnGroups = groupData.myOwnGroups;
           update();
         } else {
           print('Failed to fetch groups: ${data['message']}');
@@ -77,9 +81,10 @@ class GroupController extends GetxController {
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
         log(response.body);
-
+        print(response.body);
         MyOwnGroupData groupData = MyOwnGroupData.fromJson(data);
         myOwnGroups = groupData.groups;
+        print(myOwnGroups);
         update();
       } else {
         throw Exception(
@@ -90,6 +95,59 @@ class GroupController extends GetxController {
     } finally {
       isLoading(false);
     }
+  }
+
+  void searchGroups(String query) {
+    if (query.isEmpty) {
+      isSearching(false);
+      filteredGroups = [
+        ...myGroups.map((group) => {
+              'id': group.groupId.toString(),
+              'name': group.group.name,
+              'image': group.group.image,
+            }),
+        ...publicGroups.map((group) => {
+              'id': group.id.toString(),
+              'name': group.name,
+              'image': group.image,
+            }),
+        ...myOwnGroups.map((group) => {
+              'id': group.id.toString(),
+              'name': group.name,
+              'image': group.image,
+            }),
+      ];
+    } else {
+      isSearching(true);
+      String lowerQuery = query.toLowerCase();
+      filteredGroups = [
+        ...myGroups
+            .where(
+                (group) => group.group.name.toLowerCase().contains(lowerQuery))
+            .map((group) => {
+                  'id': group.groupId.toString(),
+                  'name': group.group.name,
+                  'image': group.group.image,
+                }),
+        ...publicGroups
+            .where((group) => group.name.toLowerCase().contains(lowerQuery))
+            .map((group) => {
+                  'id': group.id.toString(),
+                  'name': group.name,
+                  'image': group.image,
+                }),
+        ...myOwnGroups
+            .where((group) => group.name.toLowerCase().contains(lowerQuery))
+            .map((group) => {
+                  'id': group.id.toString(),
+                  'name': group.name,
+                  'image': group.image,
+                }),
+      ];
+      print("Query: $query");
+      print("Filtered Groups: ${filteredGroups.length}");
+    }
+    update();
   }
 
   @override

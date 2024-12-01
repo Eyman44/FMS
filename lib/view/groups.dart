@@ -11,7 +11,6 @@ import 'package:get/get.dart';
 class GroupPage extends StatelessWidget {
   GroupPage({super.key});
 
-  // استدعاء الكونترولر
   final groupController = Get.put(GroupController());
 
   @override
@@ -39,120 +38,120 @@ class GroupPage extends StatelessWidget {
                   fillColor: Colors.grey.shade200,
                 ),
                 onChanged: (value) {
-                  // هنا يمكنك إضافة المنطق الخاص بالبحث
+                  groupController.searchGroups(value);
+                 
                 },
               ),
             ),
-            // التاب بار
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16),
-              padding: const EdgeInsets.only(bottom: 8),
-              decoration: BoxDecoration(
-                color: AppColor.backgroundcolor,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const TabBar(
-                labelColor: AppColor.title,
-                unselectedLabelColor: Colors.grey,
-                indicator: UnderlineTabIndicator(
-                  borderSide: BorderSide(width: 3.0, color: AppColor.purple),
-                  insets: EdgeInsets.symmetric(horizontal: 50.0),
-                ),
-                tabs: [
-                  Tab(text: 'All groups'),
-                  Tab(text: 'My Own Group'),
-                ],
-              ),
-            ),
-            // محتوى التاب بار
-            Expanded(
-              child: TabBarView(
-                children: [
-                  // التاب الخاص بـ "All Groups"
-                  Obx(() {
-                    if (groupController.isLoading.value) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    } else if (groupController.myGroups.isEmpty &&
-                        groupController.publicGroups.isEmpty) {
-                      return const Center(
-                        child: Padding(
-                          padding: EdgeInsets.only(top: 200),
-                          child: Column(
-                            children: [
-                              Icon(
-                                Icons.search_off_outlined,
-                                size: 100,
-                                color: AppColor.orange,
-                              ),
-                              SizedBox(height: 50),
-                              Text(
-                                "No Gruop Found",
-                                style: TextStyle(
-                                  fontSize: 18.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColor.title,
-                                  fontFamily: 'Poppins-Regular.ttf',
-                                ),
-                              ),
-                            ],
-                          ),
+            
+            Obx(() {
+              if (groupController.isSearching.value) {
+                return Expanded(
+                  child: _buildGroupList(groupController.filteredGroups),
+                );
+              } else {
+                
+                return Expanded(
+                  child: Column(
+                    children: [
+                     
+                      Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.only(bottom: 8),
+                        decoration: BoxDecoration(
+                          color: AppColor.backgroundcolor,
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                      );
-                    }
-                    return _buildGroupList([
-                      ...groupController.myGroups.map((group) => {
-                            'name': group.group.name,
-                            'image': group.group.image,
-                          }),
-                      ...groupController.publicGroups.map((group) =>
-                          {'name': group.name, 'image': group.image}),
-                    ]);
-                  }),
-                  Obx(() {
-                    if (groupController.isLoading.value) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    } else if (groupController.myOwnGroups.isEmpty) {
-                      return const Center(
-                        child: Padding(
-                          padding: EdgeInsets.only(top: 200),
-                          child: Column(
-                            children: [
-                              Icon(
-                                Icons.group_off,
-                                size: 100,
-                                color: AppColor.orange,
-                              ),
-                              SizedBox(height: 50),
-                              Text(
-                                "No Owned Groups",
-                                style: TextStyle(
-                                  fontSize: 18.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColor.title,
-                                  fontFamily: 'Poppins-Regular.ttf',
-                                ),
-                              ),
-                            ],
+                        child: const TabBar(
+                          labelColor: AppColor.title,
+                          unselectedLabelColor: Colors.grey,
+                          indicator: UnderlineTabIndicator(
+                            borderSide:
+                                BorderSide(width: 3.0, color: AppColor.purple),
+                            insets: EdgeInsets.symmetric(horizontal: 50.0),
                           ),
+                          tabs: [
+                            Tab(text: 'All groups'),
+                            Tab(text: 'My Own Group'),
+                          ],
                         ),
-                      );
-                    }
-                    return _buildGroupList(
-                      groupController.myOwnGroups.map((group) {
-                        return {
-                          'name': group.name,
-                          'image': group.image,
-                        };
-                      }).toList(),
-                    );
-                  }),
-                ],
-              ),
-            ),
+                      ),
+                      // محتوى التاب بار
+                      Expanded(
+                        child: TabBarView(
+                          children: [
+                            Obx(() {
+                              if (groupController.isLoading.value) {
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              }
+                              return _buildGroupList([
+                                ...groupController.myGroups.map((group) => {
+                                      'id': group.groupId.toString(),
+                                      'name': group.group.name,
+                                      'image': group.group.image,
+                                    }),
+                                ...groupController.publicGroups.map((group) => {
+                                      'id': group.id.toString(),
+                                      'name': group.name,
+                                      'image': group.image,
+                                    }),
+                                ...groupController.myOwnnGroups.map((group) => {
+                                      'id': group.id.toString(),
+                                      'name': group.name,
+                                      'image': group.image,
+                                    }),
+                              ]);
+                            }),
+                            // التاب الخاص بـ "My Own Group"
+                            Obx(() {
+                              if (groupController.isLoading.value) {
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              } else if (groupController.myOwnGroups.isEmpty) {
+                                return const Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.only(top: 200),
+                                    child: Column(
+                                      children: [
+                                        Icon(
+                                          Icons.group_off,
+                                          size: 100,
+                                          color: AppColor.orange,
+                                        ),
+                                        SizedBox(height: 50),
+                                        Text(
+                                          "No Owned Groups",
+                                          style: TextStyle(
+                                            fontSize: 18.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: AppColor.title,
+                                            fontFamily: 'Poppins-Regular.ttf',
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }
+                              return _buildGroupList([
+                                ...groupController.myOwnGroups.map((group) => {
+                                      'id': group.id.toString(),
+                                      'name': group.name,
+                                      'image': group.image,
+                                    }),
+                              ]);
+                            }),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }
+            }),
           ],
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
@@ -167,13 +166,17 @@ class GroupPage extends StatelessWidget {
     );
   }
 
-  // قائمة الغروبات مع خطوط فاصلة
+  // تعديل طريقة _buildGroupList
   Widget _buildGroupList(List<Map<String, String>> groups) {
     return ListView.separated(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       itemBuilder: (context, index) {
         final group = groups[index];
-        return _buildGroupItem(group['name']!, group['image']!);
+        return _buildGroupItem(
+          group['id']!, // إرسال id الغروب
+          group['name']!,
+          group['image']!,
+        );
       },
       separatorBuilder: (context, index) => const Padding(
         padding: EdgeInsets.all(8.0),
@@ -187,11 +190,15 @@ class GroupPage extends StatelessWidget {
     );
   }
 
-  // عنصر الغروب
-  Widget _buildGroupItem(String name, String imagePath) {
+// تعديل طريقة _buildGroupItem
+  Widget _buildGroupItem(String id, String name, String imagePath) {
     return InkWell(
       onTap: () {
-        Get.to(const GroupDetailesPage());
+        Get.to(
+          GroupDetailesPage(
+            id: int.parse(id),
+          ),
+        );
       },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 8),

@@ -23,7 +23,7 @@ class GroupInviteController extends GetxController {
       var response = await http.get(
         Uri.parse("$baseurl/user/groupInvitations"),
         headers: {
-          'Authorization': 'Bearer $token',
+          'Authorization': token,
         },
       );
 
@@ -35,12 +35,10 @@ class GroupInviteController extends GetxController {
         var jsonResponse = jsonDecode(response.body);
         if (jsonResponse['status'] == 'Success') {
           invites.value = jsonResponse['data'];
-        }
-        else {
+        } else {
           invites.value = [];
         }
-      }
-      else {
+      } else {
         Get.snackbar(
           "Error",
           "Failed to fetch invites",
