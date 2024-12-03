@@ -12,10 +12,10 @@ class GroupDetailesPage extends StatefulWidget {
   const GroupDetailesPage({super.key, required this.id});
 
   @override
-  _GroupPageState createState() => _GroupPageState();
+  GroupPageState createState() => GroupPageState();
 }
 
-class _GroupPageState extends State<GroupDetailesPage> {
+class GroupPageState extends State<GroupDetailesPage> {
   late final GroupDetailsController controller;
   @override
   void initState() {

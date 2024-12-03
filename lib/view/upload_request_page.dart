@@ -114,7 +114,6 @@ class RequestsPage extends StatelessWidget {
                         // زر قبول
                         ElevatedButton(
                           onPressed: () {
-                            // تنفيذ وظيفة القبول
                             print("Request accepted by ${request['username']}");
                           },
                           style: ElevatedButton.styleFrom(

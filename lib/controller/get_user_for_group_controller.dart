@@ -25,24 +25,19 @@ class GroupUsersController extends GetxController {
         throw Exception('Token is null');
       }
 
-      // إنشاء رابط الـ API
       Uri url = Uri.parse("$baseurl/group/users/$groupId");
 
-      // طلب HTTP لجلب البيانات
       final response = await http.get(
         url,
         headers: {
           "Authorization": token,
         },
       );
-
-      // معالجة الاستجابة
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
         log(response.body);
         print(response.body);
         if (data['status'] == "Success") {
-          // تحويل البيانات إلى النموذج
           groupData = GroupUserData.fromJson(data['data']);
           print(groupData);
         } else {
@@ -215,6 +210,109 @@ class GroupUsersController extends GetxController {
       );
     }
   }
+  Future<void> restrictUser({required int userId}) async {
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('auth');
+
+    if (token == null) {
+      throw Exception('Token is null');
+    }
+
+    final response = await http.post(
+      Uri.parse('$baseurl/group/restrict'),
+      headers: {
+        "Authorization": token,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: {
+        "userId": userId.toString(),
+        "groupId": groupId.toString(),
+       
+      },
+    );
+
+    if (response.statusCode == 200) {
+      var data = json.decode(response.body);
+      if (data['status'] == "Success") {
+        Get.snackbar(
+          "Success",
+          "User has been restricted successfully.",
+          backgroundColor: AppColor.backgroundcolor,
+          colorText: AppColor.title,
+          snackPosition: SnackPosition.TOP,
+          duration: const Duration(seconds: 3),
+        );
+        fetchGroupUsers();
+      } else {
+        throw Exception(data['message']);
+      }
+    } else {
+      throw Exception(
+          'Failed to restrict user. Status Code: ${response.statusCode}');
+    }
+  } catch (e) {
+    Get.snackbar(
+      "Error",
+      e.toString(),
+      backgroundColor: AppColor.orange,
+      snackPosition: SnackPosition.TOP,
+      duration: const Duration(seconds: 3),
+    );
+  }
+}
+Future<void> unRestrictUser({required int userId}) async {
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('auth');
+
+    if (token == null) {
+      throw Exception('Token is null');
+    }
+
+    final response = await http.post(
+      Uri.parse('$baseurl/group/unRestrict'),
+      headers: {
+        "Authorization": token,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: {
+        "userId": userId.toString(),
+        "groupId": groupId.toString(),
+     
+      },
+    );
+
+    if (response.statusCode == 200) {
+      var data = json.decode(response.body);
+      if (data['status'] == "Success") {
+        Get.snackbar(
+          "Success",
+          "User restriction has been removed successfully.",
+          backgroundColor: AppColor.backgroundcolor,
+          colorText: AppColor.title,
+          snackPosition: SnackPosition.TOP,
+          duration: const Duration(seconds: 3),
+        );
+        fetchGroupUsers(); 
+      } else {
+        throw Exception(data['message']);
+      }
+    } else {
+      throw Exception(
+          'Failed to unrestrict user. Status Code: ${response.statusCode}');
+    }
+  } catch (e) {
+    Get.snackbar(
+      "Error",
+      e.toString(),
+      backgroundColor: AppColor.orange,
+      snackPosition: SnackPosition.TOP,
+      duration: const Duration(seconds: 3),
+    );
+  }
+}
+
 
   @override
   void onInit() {

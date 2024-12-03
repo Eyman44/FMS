@@ -8,14 +8,20 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 class GroupController extends GetxController {
-  List<MyGroup> myGroups = [];
-  List<PublicGroup> publicGroups = [];
-  List<MyOwnGroup> myOwnnGroups = [];
-  List<OwnGroup> myOwnGroups = [];
+  // بيانات المجموعات
+  var myGroups = <MyGroup>[].obs;
+  var publicGroups = <PublicGroup>[].obs;
+  var myOwnnGroups = <MyOwnGroup>[].obs;
+  var myOwnGroups = <OwnGroup>[].obs;
 
-  List<Map<String, String>> filteredGroups = <Map<String, String>>[].obs;
+  // المجموعات المفلترة للبحث
+  var filteredGroups = <Map<String, String>>[].obs;
+
+  // حالة التحميل والبحث
   var isLoading = true.obs;
   var isSearching = false.obs;
+
+  // جلب بيانات المجموعات
   Future<void> fetchGroups() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -27,6 +33,7 @@ class GroupController extends GetxController {
 
       Uri url = Uri.parse("$baseurl/user/myGroups");
 
+      isLoading(true);
       final response = await http.get(
         url,
         headers: {
@@ -34,17 +41,16 @@ class GroupController extends GetxController {
         },
       );
 
-      isLoading(true);
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
         log(response.body);
 
         if (data['status'] == "Success") {
           GroupData groupData = GroupData.fromJson(data['data']);
-          myGroups = groupData.myGroups;
-          publicGroups = groupData.publicGroups;
-          myOwnnGroups = groupData.myOwnGroups;
-          update();
+          myGroups.value = groupData.myGroups;
+          publicGroups.value = groupData.publicGroups;
+          myOwnnGroups.value = groupData.myOwnGroups;
+          _resetFilteredGroups(); // تحديث المجموعات المفلترة
         } else {
           print('Failed to fetch groups: ${data['message']}');
         }
@@ -59,6 +65,7 @@ class GroupController extends GetxController {
     }
   }
 
+  // جلب بيانات "My Own Groups"
   Future<void> fetchOwnGroups() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -70,6 +77,7 @@ class GroupController extends GetxController {
 
       Uri url = Uri.parse("$baseurl/user/myOwnGroups");
 
+      isLoading(true);
       final response = await http.get(
         url,
         headers: {
@@ -77,15 +85,12 @@ class GroupController extends GetxController {
         },
       );
 
-      isLoading(true);
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
         log(response.body);
-        print(response.body);
         MyOwnGroupData groupData = MyOwnGroupData.fromJson(data);
-        myOwnGroups = groupData.groups;
-        print(myOwnGroups);
-        update();
+        myOwnGroups.value = groupData.groups;
+        _resetFilteredGroups(); // تحديث المجموعات المفلترة
       } else {
         throw Exception(
             'Failed to load joined groups. Status Code: ${response.statusCode}');
@@ -97,30 +102,15 @@ class GroupController extends GetxController {
     }
   }
 
+  // دالة البحث
   void searchGroups(String query) {
     if (query.isEmpty) {
       isSearching(false);
-      filteredGroups = [
-        ...myGroups.map((group) => {
-              'id': group.groupId.toString(),
-              'name': group.group.name,
-              'image': group.group.image,
-            }),
-        ...publicGroups.map((group) => {
-              'id': group.id.toString(),
-              'name': group.name,
-              'image': group.image,
-            }),
-        ...myOwnGroups.map((group) => {
-              'id': group.id.toString(),
-              'name': group.name,
-              'image': group.image,
-            }),
-      ];
+      _resetFilteredGroups(); // إعادة تعيين المجموعات
     } else {
       isSearching(true);
       String lowerQuery = query.toLowerCase();
-      filteredGroups = [
+      filteredGroups.value = [
         ...myGroups
             .where(
                 (group) => group.group.name.toLowerCase().contains(lowerQuery))
@@ -144,16 +134,34 @@ class GroupController extends GetxController {
                   'image': group.image,
                 }),
       ];
-      print("Query: $query");
-      print("Filtered Groups: ${filteredGroups.length}");
     }
-    update();
+  }
+
+  // إعادة تعيين المجموعات المفلترة
+  void _resetFilteredGroups() {
+    filteredGroups.value = [
+      ...myGroups.map((group) => {
+            'id': group.groupId.toString(),
+            'name': group.group.name,
+            'image': group.group.image,
+          }),
+      ...publicGroups.map((group) => {
+            'id': group.id.toString(),
+            'name': group.name,
+            'image': group.image,
+          }),
+      ...myOwnGroups.map((group) => {
+            'id': group.id.toString(),
+            'name': group.name,
+            'image': group.image,
+          }),
+    ];
   }
 
   @override
   void onInit() {
+    super.onInit();
     fetchGroups();
     fetchOwnGroups();
-    super.onInit();
   }
 }

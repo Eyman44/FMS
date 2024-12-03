@@ -1,7 +1,6 @@
 import 'dart:convert';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constant/color.dart';
+import 'package:flutter_application_1/controller/get_all_group_controller.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -77,8 +76,8 @@ class GroupInviteController extends GetxController {
       if (response.statusCode == 200) {
         var jsonResponse = jsonDecode(response.body);
         if (jsonResponse['status'] == 'Success') {
-          // إزالة الدعوة المقبولة من القائمة
           invites.removeWhere((invite) => invite['id'] == inviteId);
+          Get.find<GroupController>().fetchGroups();
           Get.snackbar(
             "Success",
             jsonResponse['data'],

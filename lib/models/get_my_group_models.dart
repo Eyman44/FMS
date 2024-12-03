@@ -57,14 +57,14 @@ class PublicGroup {
 
   factory PublicGroup.fromJson(Map<String, dynamic> json) {
     return PublicGroup(
-      id: json['id'] ?? 0,
-      name: json['name'] ?? "Unnamed Group",
-      image:
-          "https://cdn.elearningindustry.com/wp-content/uploads/2020/02/what-to-check-before-an-online-course-purchase.png",
-      // json['image'] != null && json['image'].isNotEmpty
-      //     ? "$baseurl/images/groups/${json['image']}"
-      //     : "https://cdn.elearningindustry.com/wp-content/uploads/2020/02/what-to-check-before-an-online-course-purchase.png",
-    );
+        id: json['id'] ?? 0,
+        name: json['name'] ?? "Unnamed Group",
+        image:// "$baseurl/images/groups/1732433765035.jpg");
+       "https://cdn.elearningindustry.com/wp-content/uploads/2020/02/what-to-check-before-an-online-course-purchase.png",
+    //       json['image'] != null && json['image'].isNotEmpty
+    //           ? "$baseurl/images/groups/1732433765035.jpg"
+    //           : "https://cdn.elearningindustry.com/wp-content/uploads/2020/02/what-to-check-before-an-online-course-purchase.png",
+     );
   }
 
   static List<PublicGroup> fromJsonList(List<dynamic> jsonList) {

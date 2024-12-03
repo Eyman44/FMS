@@ -57,6 +57,6 @@ class GroupDetailsController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchGroupDetails(); // استدعاء جلب تفاصيل المجموعة
+    fetchGroupDetails();
   }
 }

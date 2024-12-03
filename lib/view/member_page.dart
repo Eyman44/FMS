@@ -32,7 +32,9 @@ class MembersPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const InvitePage(),
+                    builder: (context) => InvitePage(
+                      id: groupId,
+                    ),
                   ),
                 );
               },
@@ -48,10 +50,7 @@ class MembersPage extends StatelessWidget {
         if (controller.groupData == null) {
           return const Center(child: Text("No members found"));
         }
-
         final groupData = controller.groupData!;
-
-        // التحقق إذا لم يكن المستخدم صاحب المجموعة أو إداريًا
         if (!groupData.groupOwner && !groupData.isAdmin) {
           return const Center(
             child: Column(
@@ -118,7 +117,7 @@ class MembersPage extends StatelessWidget {
                                 await controller.unBanUser(userId: user.id);
                               },
                               icon: const Icon(
-                                Icons.lock_open,
+                                Icons.report_off_sharp,
                                 color: Colors.green,
                                 size: 30,
                               ),
@@ -137,21 +136,60 @@ class MembersPage extends StatelessWidget {
                             ),
                       const SizedBox(width: 16),
                       IconButton(
-                        onPressed: () {
-                          print(
-                              "${user.firstName} ${user.lastName} has been restricted.");
-                        },
-                        icon: const Icon(
-                          Icons.lock,
-                          color: AppColor.orange,
-                          size: 30,
-                        ),
-                        tooltip: "Restrict",
-                      ),
-                       IconButton(
-                       onPressed: () async {
-                                await controller.removeUser(userId: user.id);
+                        onPressed: user.permissions.isEmpty
+                            ? () {
+                                // إظهار Snackbar عند محاولة تقييد مستخدم محظور
+                                Get.snackbar(
+                                  "Action not allowed",
+                                  "This user is banned and cannot be restricted.",
+                                  backgroundColor: Colors.red,
+                                  colorText: Colors.white,
+                                  snackPosition: SnackPosition.TOP,
+                                  duration: const Duration(seconds: 3),
+                                  margin: const EdgeInsets.all(
+                                      10), // مسافة من الحواف
+                                  borderRadius: 8, // زوايا مستديرة
+                                );
+                              }
+                            : () async {
+                                // تنفيذ إجراءات التقييد أو إلغاء التقييد
+                                if (user.permissions.length == 1 &&
+                                    user.permissions.first.permission == 2) {
+                                  await controller.unRestrictUser(
+                                      userId: user.id);
+                                } else {
+                                  await controller.restrictUser(
+                                      userId: user.id);
+                                }
                               },
+                        icon: user.permissions.isEmpty
+                            ? const Icon(
+                                Icons.lock,
+                                color: Colors.grey, // زر بلون رمادي
+                                size: 30,
+                              )
+                            : Icon(
+                                user.permissions.length == 1 &&
+                                        user.permissions.first.permission == 2
+                                    ? Icons.lock_open
+                                    : Icons.lock,
+                                color: user.permissions.length == 1 &&
+                                        user.permissions.first.permission == 2
+                                    ? Colors.green
+                                    : AppColor.orange,
+                                size: 30,
+                              ),
+                        tooltip: user.permissions.isEmpty
+                            ? "Action not allowed because the user is banned alraedy"
+                            : user.permissions.length == 1 &&
+                                    user.permissions.first.permission == 2
+                                ? "Unrestrict"
+                                : "Restrict",
+                      ),
+                      IconButton(
+                        onPressed: () async {
+                          await controller.removeUser(userId: user.id);
+                        },
                         icon: const Icon(
                           Icons.delete,
                           color: Colors.red,
