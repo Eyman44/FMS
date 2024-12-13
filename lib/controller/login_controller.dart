@@ -12,7 +12,6 @@ class LoginController extends GetxController {
       Uri.parse("$baseurl/user/login"),
       headers: {
         'Accept': 'application/json',
-        
       },
       body: <String, String>{
         "email": email,
@@ -41,12 +40,11 @@ class LoginController extends GetxController {
         duration: const Duration(seconds: 3),
       );
 
-      Get.off(() =>  GroupPage());
+      Get.off(() => GroupPage());
     } else {
       Get.snackbar(
         "Message",
         response1['message'],
-      
         backgroundColor: AppColor.orange,
         snackPosition: SnackPosition.TOP,
         duration: const Duration(seconds: 3),

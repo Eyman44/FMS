@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:typed_data';
 import 'package:flutter_application_1/main.dart';
 import 'package:flutter_application_1/models/get_one_group.dart';
 import 'package:get/get.dart';
@@ -39,6 +40,8 @@ class GroupDetailsController extends GetxController {
 
         if (data['status'] == "Success") {
           groupDetails = GroupResponse.fromJson(data['data']);
+          print('detailes of this groupppppppp');
+          print(data['data']);
         } else {
           print('Failed to fetch group details: ${data['message']}');
         }
@@ -50,7 +53,46 @@ class GroupDetailsController extends GetxController {
       print('Error: $e');
     } finally {
       isLoading(false);
-      update(); // تحديث الواجهة
+      update();
+    }
+  }
+
+  Future<void> uploadFile({
+    required int groupId,
+    required String fileName,
+    required Uint8List fileBytes,
+  }) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('auth');
+
+      if (token == null) {
+        throw Exception('Token is null');
+      }
+
+      Uri url = Uri.parse("$baseurl/file/");
+
+      var request = http.MultipartRequest('POST', url)
+        ..headers['Authorization'] = token
+        ..fields['name'] = fileName
+        ..fields['groupId'] = groupId.toString()
+        ..files.add(http.MultipartFile.fromBytes('file', fileBytes,
+            filename: fileName));
+
+      final response = await request.send();
+
+      if (response.statusCode == 200) {
+        Get.snackbar("Success", "File uploaded successfully.");
+        print(
+            "Successsssssssssssssssssssssssssssssss File uploaded successfully.");
+        fetchGroupDetails();
+      } else {
+        Get.snackbar("Error", "Failed to upload file.");
+        print("Faileddddddddddddddddddddddddddddddddddd File uploaded .");
+      }
+    } catch (e) {
+      print('Error: $e');
+      Get.snackbar("Error", "An error occurred while uploading the file.");
     }
   }
 

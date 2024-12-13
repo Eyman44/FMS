@@ -24,7 +24,7 @@ class GroupPage extends StatelessWidget {
         ),
         body: Column(
           children: [
-            // صندوق البحث
+           
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextField(
@@ -76,7 +76,7 @@ class GroupPage extends StatelessWidget {
                           ],
                         ),
                       ),
-                      // محتوى التاب بار
+                    
                       Expanded(
                         child: TabBarView(
                           children: [
@@ -104,7 +104,7 @@ class GroupPage extends StatelessWidget {
                                     }),
                               ]);
                             }),
-                            // التاب الخاص بـ "My Own Group"
+                         
                             Obx(() {
                               if (groupController.isLoading.value) {
                                 return const Center(
@@ -166,14 +166,14 @@ class GroupPage extends StatelessWidget {
     );
   }
 
-  // تعديل طريقة _buildGroupList
+  
   Widget _buildGroupList(List<Map<String, String>> groups) {
     return ListView.separated(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       itemBuilder: (context, index) {
         final group = groups[index];
         return _buildGroupItem(
-          group['id']!, // إرسال id الغروب
+          group['id']!, 
           group['name']!,
           group['image']!,
         );
@@ -190,7 +190,7 @@ class GroupPage extends StatelessWidget {
     );
   }
 
-// تعديل طريقة _buildGroupItem
+
   Widget _buildGroupItem(String id, String name, String imagePath) {
     return InkWell(
       onTap: () {

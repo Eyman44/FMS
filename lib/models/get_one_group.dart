@@ -23,7 +23,7 @@ class GroupData {
   final String name;
   final String image;
   final bool isPublic;
-  final List<dynamic> groupFiles;
+  final List<GroupFile> groupFiles;
 
   GroupData({
     required this.id,
@@ -43,8 +43,51 @@ class GroupData {
       //     ? "https://cdn.elearningindustry.com/wp-content/uploads/2020/02/what-to-check-before-an-online-course-purchase.png"
       //     : "$baseurl/images/groups/" + json['image'],
       isPublic: json['isPublic'] ?? false,
-      groupFiles:
-          json['groupFiles'] ?? [], // استخدام قائمة فارغة كقيمة افتراضية
+      groupFiles: (json['GroupFiles'] as List<dynamic>?)?.map((file) {
+            print("Parsing file: $file"); // طباعة الملف الحالي
+            return GroupFile.fromJson(file);
+          }).toList() ??
+          [],
+    );
+  }
+}
+
+class GroupFile {
+  final int fileId;
+  final FileData file;
+
+  GroupFile({
+    required this.fileId,
+    required this.file,
+  });
+
+  factory GroupFile.fromJson(Map<String, dynamic> json) {
+    return GroupFile(
+      fileId: json['fileId'] ?? 0,
+      file: FileData.fromJson(json['File']),
+    );
+  }
+}
+
+class FileData {
+  final String name;
+  final String dbName;
+  final bool free;
+  final int ownerId;
+
+  FileData({
+    required this.name,
+    required this.dbName,
+    required this.free,
+    required this.ownerId,
+  });
+
+  factory FileData.fromJson(Map<String, dynamic> json) {
+    return FileData(
+      name: json['name'] ?? "Unknown",
+      dbName: json['dbName'] ?? "",
+      free: json['free'] ?? false,
+      ownerId: json['ownerId'] ?? 0,
     );
   }
 }

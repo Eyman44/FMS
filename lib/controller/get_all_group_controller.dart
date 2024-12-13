@@ -8,20 +8,20 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 class GroupController extends GetxController {
-  // بيانات المجموعات
+
   var myGroups = <MyGroup>[].obs;
   var publicGroups = <PublicGroup>[].obs;
   var myOwnnGroups = <MyOwnGroup>[].obs;
   var myOwnGroups = <OwnGroup>[].obs;
 
-  // المجموعات المفلترة للبحث
+
   var filteredGroups = <Map<String, String>>[].obs;
 
-  // حالة التحميل والبحث
+ 
   var isLoading = true.obs;
   var isSearching = false.obs;
 
-  // جلب بيانات المجموعات
+ 
   Future<void> fetchGroups() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -50,7 +50,7 @@ class GroupController extends GetxController {
           myGroups.value = groupData.myGroups;
           publicGroups.value = groupData.publicGroups;
           myOwnnGroups.value = groupData.myOwnGroups;
-          _resetFilteredGroups(); // تحديث المجموعات المفلترة
+          _resetFilteredGroups();
         } else {
           print('Failed to fetch groups: ${data['message']}');
         }
@@ -65,7 +65,7 @@ class GroupController extends GetxController {
     }
   }
 
-  // جلب بيانات "My Own Groups"
+
   Future<void> fetchOwnGroups() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -90,7 +90,7 @@ class GroupController extends GetxController {
         log(response.body);
         MyOwnGroupData groupData = MyOwnGroupData.fromJson(data);
         myOwnGroups.value = groupData.groups;
-        _resetFilteredGroups(); // تحديث المجموعات المفلترة
+        _resetFilteredGroups();
       } else {
         throw Exception(
             'Failed to load joined groups. Status Code: ${response.statusCode}');
@@ -102,11 +102,11 @@ class GroupController extends GetxController {
     }
   }
 
-  // دالة البحث
+
   void searchGroups(String query) {
     if (query.isEmpty) {
       isSearching(false);
-      _resetFilteredGroups(); // إعادة تعيين المجموعات
+      _resetFilteredGroups();
     } else {
       isSearching(true);
       String lowerQuery = query.toLowerCase();
@@ -137,7 +137,7 @@ class GroupController extends GetxController {
     }
   }
 
-  // إعادة تعيين المجموعات المفلترة
+
   void _resetFilteredGroups() {
     filteredGroups.value = [
       ...myGroups.map((group) => {
