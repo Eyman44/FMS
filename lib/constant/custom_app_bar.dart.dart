@@ -64,7 +64,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => RequestsPage()),
+                    MaterialPageRoute(builder: (context) => UploadRequestsPage()),
                   );
                 },
                 icon: const Icon(Icons.upload, color: AppColor.title, size: 20),

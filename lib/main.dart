@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constant/fonts.dart';
-import 'package:flutter_application_1/view/files_page.dart';
 import 'package:flutter_application_1/view/login.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
