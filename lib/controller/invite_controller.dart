@@ -12,7 +12,7 @@ class InviteController extends GetxController {
   var allUsers = <UserToInvite>[].obs;
   var filteredUsers = <UserToInvite>[].obs;
   var sentInvitations =
-      <int>[].obs; // قائمة للمستخدمين الذين تم إرسال دعوات لهم
+      <int>[].obs; 
   late int groupId;
 
   InviteController({required this.groupId});

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter_application_1/controller/get_all_group_controller.dart';
 import 'package:flutter_application_1/main.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,7 +21,7 @@ class GroupCreateController extends GetxController {
       );
 
       request.headers.addAll({
-        'Authorization':  token,
+        'Authorization': token,
       });
 
       request.fields['name'] = name;
@@ -38,6 +39,9 @@ class GroupCreateController extends GetxController {
       final response = await request.send();
 
       if (response.statusCode == 200) {
+        Get.find<GroupController>().fetchGroups();
+        Get.find<GroupController>().fetchOwnGroups();
+
         return true;
       } else {
         return false;
