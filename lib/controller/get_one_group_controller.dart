@@ -95,6 +95,52 @@ class GroupDetailsController extends GetxController {
       Get.snackbar("Error", "An error occurred while uploading the file.");
     }
   }
+  
+Future<void> deleteFile({
+  required int groupId,
+  required int fileId,
+}) async {
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('auth');
+
+    if (token == null) {
+      throw Exception('Token is null');
+    }
+
+    Uri url = Uri.parse("$baseurl/file/delete");
+
+    final response = await http.post(
+      url,
+      headers: {
+        "Authorization": token,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: {
+        "groupId": groupId.toString(),
+        "fileId": fileId.toString(),
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      if (data['status'] == "Success") {
+        Get.snackbar("Success", "File deleted successfully.");
+        print("File deleted successfully.");
+        fetchGroupDetails(); // Refresh group details
+      } else {
+        Get.snackbar("Error", "Failed to delete file: ${data['message']}");
+        print("Failed to delete file: ${data['message']}");
+      }
+    } else {
+      throw Exception(
+          'Failed to delete file. Status Code: ${response.statusCode}');
+    }
+  } catch (e) {
+    print('Error: $e');
+    Get.snackbar("Error", "An error occurred while deleting the file.");
+  }
+}
 
   @override
   void onInit() {

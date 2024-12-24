@@ -138,7 +138,7 @@ class MembersPage extends StatelessWidget {
                       IconButton(
                         onPressed: user.permissions.isEmpty
                             ? () {
-                                // إظهار Snackbar عند محاولة تقييد مستخدم محظور
+                        
                                 Get.snackbar(
                                   "Action not allowed",
                                   "This user is banned and cannot be restricted.",

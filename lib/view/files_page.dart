@@ -1,4 +1,3 @@
-
 import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
@@ -246,9 +245,35 @@ class GroupPageState extends State<GroupDetailesPage> {
                                         icon: const Icon(Icons.delete,
                                             color: Colors.red),
                                         onPressed: () {
-                                          // استدعاء وظيفة الحذف هنا
-                                          Get.snackbar("Delete",
-                                              "Deleting ${file.file.name}");
+                                          showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return AlertDialog(
+                                                title:
+                                                    const Text("Delete File"),
+                                                content: const Text(
+                                                    "Are you sure you want to delete this file?"),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                    },
+                                                    child: const Text("Cancel"),
+                                                  ),
+                                                  ElevatedButton(
+                                                    onPressed: () {
+                                                      controller.deleteFile(
+                                                        groupId: widget.id,
+                                                        fileId: file.fileId,
+                                                      );
+                                                      Navigator.pop(context);
+                                                    },
+                                                    child: const Text("Delete"),
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
                                         },
                                       ),
                                     ],

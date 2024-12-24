@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter_application_1/constant/color.dart';
 import 'package:flutter_application_1/main.dart';
 import 'package:flutter_application_1/view/groups.dart';
+import 'package:flutter_application_1/view/super_admin.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,13 +20,15 @@ class LoginController extends GetxController {
       },
     );
 
-    print("response is${response.body}");
-    print("resopnse is ${response.statusCode}");
+    print("response is ${response.body}");
+    print("response is ${response.statusCode}");
 
     var response1 = jsonDecode(response.body);
     late var token;
+
     if (response.statusCode == 200) {
       token = response1["token"];
+      bool isAdmin = response1["data"]["isAdmin"];
 
       final prefs = await SharedPreferences.getInstance();
       prefs.setString('auth', token);
@@ -40,7 +43,11 @@ class LoginController extends GetxController {
         duration: const Duration(seconds: 3),
       );
 
-      Get.off(() => GroupPage());
+      if (isAdmin) {
+        Get.off(() => SuberPage());
+      } else {
+        Get.off(() => GroupPage());
+      }
     } else {
       Get.snackbar(
         "Message",

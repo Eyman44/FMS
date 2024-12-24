@@ -17,7 +17,7 @@ class LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController(text: "12345678");
   final _formKey = GlobalKey<FormState>();
 
-  final loginController = Get.put(LoginController()); // استدعاء الكونترولر
+  final loginController = Get.put(LoginController()); 
 
   bool _isPasswordVisible = false; // State for password visibility
 

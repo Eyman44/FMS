@@ -8,20 +8,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 class GroupController extends GetxController {
-
   var myGroups = <MyGroup>[].obs;
   var publicGroups = <PublicGroup>[].obs;
   var myOwnnGroups = <MyOwnGroup>[].obs;
   var myOwnGroups = <OwnGroup>[].obs;
 
-
   var filteredGroups = <Map<String, String>>[].obs;
 
- 
   var isLoading = true.obs;
   var isSearching = false.obs;
 
- 
   Future<void> fetchGroups() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -47,6 +43,7 @@ class GroupController extends GetxController {
 
         if (data['status'] == "Success") {
           GroupData groupData = GroupData.fromJson(data['data']);
+
           myGroups.value = groupData.myGroups;
           publicGroups.value = groupData.publicGroups;
           myOwnnGroups.value = groupData.myOwnGroups;
@@ -64,7 +61,6 @@ class GroupController extends GetxController {
       isLoading(false);
     }
   }
-
 
   Future<void> fetchOwnGroups() async {
     try {
@@ -102,7 +98,6 @@ class GroupController extends GetxController {
     }
   }
 
-
   void searchGroups(String query) {
     if (query.isEmpty) {
       isSearching(false);
@@ -136,7 +131,6 @@ class GroupController extends GetxController {
       ];
     }
   }
-
 
   void _resetFilteredGroups() {
     filteredGroups.value = [

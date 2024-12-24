@@ -89,7 +89,7 @@ class MyOwnGroup {
     return MyOwnGroup(
       id: json['id'] ?? 0,
       name: json['name'] ?? "Unnamed Group",
-      image:
+      image: // "$baseurl/images/groups/${json['image']}",
           "https://cdn.elearningindustry.com/wp-content/uploads/2020/02/what-to-check-before-an-online-course-purchase.png",
       // json['image'] != null && json['image'].isNotEmpty
       //     ? "$baseurl/images/groups/${json['image']}"
@@ -118,7 +118,7 @@ class GroupDetails {
       image:
           "https://cdn.elearningindustry.com/wp-content/uploads/2020/02/what-to-check-before-an-online-course-purchase.png",
       // json['image'] != null && json['image'].isNotEmpty
-      //     ? "$baseurl/images/groups/${json['image']}"
+      //     ? "$baseurl/images/groups/json['image']"
       //     : "https://cdn.elearningindustry.com/wp-content/uploads/2020/02/what-to-check-before-an-online-course-purchase.png",
     );
   }

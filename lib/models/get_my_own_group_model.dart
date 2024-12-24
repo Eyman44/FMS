@@ -13,7 +13,7 @@ class MyOwnGroupData {
     return MyOwnGroupData(
       isAdmin: json['isAdmin'] ?? false,
       groups: OwnGroup.fromJsonList(
-          json['data']['data']), // استخراج القائمة الصحيحة
+          json['data']['data']),
     );
   }
 }
