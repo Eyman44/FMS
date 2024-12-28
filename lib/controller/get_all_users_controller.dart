@@ -40,6 +40,7 @@ class UserController extends GetxController {
         if (data['status'] == "Success") {
           UserDataResponse userDataResponse = UserDataResponse.fromJson(data);
           users.value = userDataResponse.users;
+          
           print(response.body);
           print(response.statusCode);
         } else {
@@ -148,10 +149,25 @@ class UserController extends GetxController {
       isLoading(false);
     }
   }
+ void searchUsers(String query) {
+    if (query.isEmpty) {
+      filteredUsers.value = users;
+    } else {
+      filteredUsers.value = users
+          .where((user) =>
+              '${user.firstName} ${user.lastName}'
+                  .toLowerCase()
+                  .contains(query.toLowerCase()) ||
+              user.email.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    }
+  }
 
   @override
   void onInit() {
     super.onInit();
-    fetchUsers();
+    fetchUsers().then((_) {
+      filteredUsers.value = users; // تحديث القائمة المفلترة عند الجلب
+    });
   }
 }

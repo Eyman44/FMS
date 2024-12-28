@@ -1,127 +1,165 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constant/color.dart';
 import 'package:flutter_application_1/constant/customer_app_bar_for_admin.dart';
-import 'package:flutter_application_1/controller/get_all_group_controller.dart';
+import 'package:flutter_application_1/controller/admin_get_all_group_controller.dart';
 import 'package:flutter_application_1/controller/get_all_users_controller.dart';
+
+import 'package:flutter_application_1/models/get_all_groups_model.dart';
 import 'package:flutter_application_1/models/get_all_user_model.dart';
+import 'package:flutter_application_1/view/add_group.dart';
 import 'package:flutter_application_1/view/files_page.dart';
 import 'package:get/get.dart';
 
-class SuberPage extends StatelessWidget {
-  SuberPage({super.key});
+class SuperPage extends StatelessWidget {
+  SuperPage({super.key});
 
-  final groupController = Get.put(GroupController());
-  final userController = Get.put(UserController()); // إضافة كونترولر المستخدمين
+  final userController = Get.put(UserController());
+  final groupController = Get.put(GroupsController());
+
+  var isSearching = false.obs; // حالة البحث
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        backgroundColor: AppColor.backgroundcolor,
-        appBar: const CustomAppBarForAdmin(
-          title: "Super Admin Page",
-        ),
-        body: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: 'Search groups or Users...',
-                  prefixIcon: const Icon(Icons.search),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  filled: true,
-                  fillColor: Colors.grey.shade200,
+    return Scaffold(
+      backgroundColor: AppColor.backgroundcolor,
+      appBar: const CustomAppBarForAdmin(
+        title: "Super Admin Page",
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'Search groups or Users...',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                onChanged: (value) {
-                  groupController.searchGroups(value);
-                },
+                filled: true,
+                fillColor: Colors.grey.shade200,
               ),
+              onChanged: (value) {
+                groupController.searchGroups(value);
+                userController.searchUsers(value);
+
+                // تعيين حالة البحث
+                isSearching.value = value.isNotEmpty;
+              },
             ),
-            Expanded(
-              child: Column(
-                children: [
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 16),
-                    padding: const EdgeInsets.only(bottom: 8),
-                    decoration: BoxDecoration(
-                      color: AppColor.backgroundcolor,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const TabBar(
-                      labelColor: AppColor.title,
-                      unselectedLabelColor: Colors.grey,
-                      indicator: UnderlineTabIndicator(
-                        borderSide:
-                            BorderSide(width: 3.0, color: AppColor.purple),
-                        insets: EdgeInsets.symmetric(horizontal: 50.0),
+          ),
+          Expanded(child: Obx(() {
+            // إذا كان هناك نص في مربع البحث، عرض فقط نتائج البحث
+            if (isSearching.value) {
+              final combinedResults = [
+                ...groupController.filteredGroups.map(
+                  (group) => {'type': 'group', 'data': group},
+                ),
+                ...userController.filteredUsers.map(
+                  (user) => {'type': 'user', 'data': user},
+                ),
+              ];
+
+              return ListView.separated(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                itemBuilder: (context, index) {
+                  final item = combinedResults[index];
+                  if (item['type'] == 'group') {
+                    final group = item['data'] as AllGroupData;
+                    return _buildGroupItem(
+                        group.id.toString(), group.name, group.image ?? "");
+                  } else if (item['type'] == 'user') {
+                    final user = item['data'] as UserDataa;
+                    return _buildUserItem(user);
+                  }
+                  return const SizedBox.shrink();
+                },
+                separatorBuilder: (context, index) => const Divider(
+                  height: 10,
+                  thickness: 0.7,
+                  color: Color.fromARGB(255, 197, 195, 195),
+                ),
+                itemCount: combinedResults.length,
+              );
+            }
+            // إذا لم يكن هناك نص، عرض التابات
+            return DefaultTabController(
+                length: 2,
+                child: Column(
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.only(bottom: 8),
+                      decoration: BoxDecoration(
+                        color: AppColor.backgroundcolor,
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      tabs: [
-                        Tab(text: 'All groups'),
-                        Tab(text: 'Users'),
-                      ],
+                      child: const TabBar(
+                        labelColor: AppColor.title,
+                        unselectedLabelColor: Colors.grey,
+                        indicator: UnderlineTabIndicator(
+                          borderSide:
+                              BorderSide(width: 3.0, color: AppColor.purple),
+                          insets: EdgeInsets.symmetric(horizontal: 50.0),
+                        ),
+                        tabs: [
+                          Tab(text: 'All groups'),
+                          Tab(text: 'Users'),
+                        ],
+                      ),
                     ),
-                  ),
-                  Expanded(
-                    child: TabBarView(
-                      children: [
-                        Obx(() {
-                          if (groupController.isLoading.value) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-                          return _buildGroupList([
-                            ...groupController.myGroups.map((group) => {
-                                  'id': group.groupId.toString(),
-                                  'name': group.group.name,
-                                  'image': group.group.image,
-                                }),
-                            ...groupController.publicGroups.map((group) => {
-                                  'id': group.id.toString(),
-                                  'name': group.name,
-                                  'image': group.image,
-                                }),
-                            ...groupController.myOwnnGroups.map((group) => {
-                                  'id': group.id.toString(),
-                                  'name': group.name,
-                                  'image': group.image,
-                                }),
-                          ]);
-                        }),
-                        Obx(() {
-                          if (userController.isLoading.value) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-                          return _buildUserList(userController.users);
-                        }),
-                      ],
+                    Expanded(
+                      child: TabBarView(
+                        children: [
+                          // تب الغروبات
+                          Obx(() {
+                            if (groupController.isLoading.value) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                            return _buildGroupList(groupController.groups);
+                          }),
+                          // تب المستخدمين
+                          Obx(() {
+                            if (userController.isLoading.value) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                            return _buildUserList(userController.users);
+                          }),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            )
-          ],
-        ),
+                  ],
+                ));
+          }))
+        ],
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showAddGroupDialog(context);
+        },
+        backgroundColor: Colors.grey,
+        child: const Icon(Icons.add),
       ),
     );
   }
 }
 
-Widget _buildGroupList(List<Map<String, String>> groups) {
+// بناء قائمة الغروبات
+Widget _buildGroupList(List<AllGroupData> groups) {
   return ListView.separated(
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
     itemBuilder: (context, index) {
       final group = groups[index];
       return _buildGroupItem(
-        group['id']!,
-        group['name']!,
-        group['image']!,
+        group.id.toString(),
+        group.name,
+        group.image ?? "",
       );
     },
     separatorBuilder: (context, index) => const Padding(
@@ -137,6 +175,7 @@ Widget _buildGroupList(List<Map<String, String>> groups) {
 }
 
 Widget _buildGroupItem(String id, String name, String imagePath) {
+  final groupController = Get.find<GroupsController>();
   return InkWell(
     onTap: () {
       Get.to(
@@ -151,15 +190,36 @@ Widget _buildGroupItem(String id, String name, String imagePath) {
         children: [
           CircleAvatar(
             radius: 25,
-            backgroundImage: NetworkImage(imagePath),
+            backgroundImage: imagePath.isNotEmpty
+                ? NetworkImage(imagePath)
+                : const AssetImage('assets/images/placeholder.png')
+                    as ImageProvider,
           ),
           const SizedBox(width: 12),
-          Text(
-            name,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
+          Expanded(
+            child: Text(
+              name,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
             ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete, color: Colors.red),
+            onPressed: () {
+              Get.defaultDialog(
+                title: 'Delete Group',
+                middleText: 'Are you sure you want to delete this group?',
+                textConfirm: 'Yes',
+                textCancel: 'No',
+                confirmTextColor: Colors.white,
+                onConfirm: () {
+                  groupController.deleteGroup(int.parse(id));
+                  Get.back(); // إغلاق نافذة التأكيد
+                },
+              );
+            },
           ),
         ],
       ),
@@ -167,6 +227,7 @@ Widget _buildGroupItem(String id, String name, String imagePath) {
   );
 }
 
+// بناء قائمة المستخدمين
 Widget _buildUserList(List<UserDataa> users) {
   return ListView.separated(
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -186,6 +247,7 @@ Widget _buildUserList(List<UserDataa> users) {
   );
 }
 
+// عنصر المستخدم
 Widget _buildUserItem(UserDataa user) {
   final userController = Get.find<UserController>();
   return Container(

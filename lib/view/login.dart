@@ -13,11 +13,11 @@ class LoginPage extends StatefulWidget {
 }
 
 class LoginPageState extends State<LoginPage> {
-  final _usernameController = TextEditingController(text: "mhmad@gmail.com");
+  final _usernameController = TextEditingController(text: "admin@gmail.com");
   final _passwordController = TextEditingController(text: "12345678");
   final _formKey = GlobalKey<FormState>();
 
-  final loginController = Get.put(LoginController()); 
+  final loginController = Get.put(LoginController());
 
   bool _isPasswordVisible = false; // State for password visibility
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constant/color.dart';
 import 'package:flutter_application_1/constant/custom_app_bar.dart.dart';
 import 'package:flutter_application_1/constant/image.dart';
+import 'package:flutter_application_1/controller/admin_get_all_group_controller.dart';
 import 'package:flutter_application_1/controller/get_all_group_controller.dart';
 import 'package:flutter_application_1/main.dart';
 import 'package:flutter_application_1/view/add_group.dart';
@@ -12,6 +13,7 @@ class GroupPage extends StatelessWidget {
   GroupPage({super.key});
 
   final groupController = Get.put(GroupController());
+  final groupsController = Get.put(GroupsController());
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +26,6 @@ class GroupPage extends StatelessWidget {
         ),
         body: Column(
           children: [
-           
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextField(
@@ -39,22 +40,18 @@ class GroupPage extends StatelessWidget {
                 ),
                 onChanged: (value) {
                   groupController.searchGroups(value);
-                 
                 },
               ),
             ),
-            
             Obx(() {
               if (groupController.isSearching.value) {
                 return Expanded(
                   child: _buildGroupList(groupController.filteredGroups),
                 );
               } else {
-                
                 return Expanded(
                   child: Column(
                     children: [
-                     
                       Container(
                         margin: const EdgeInsets.symmetric(horizontal: 16),
                         padding: const EdgeInsets.only(bottom: 8),
@@ -76,7 +73,6 @@ class GroupPage extends StatelessWidget {
                           ],
                         ),
                       ),
-                    
                       Expanded(
                         child: TabBarView(
                           children: [
@@ -104,7 +100,6 @@ class GroupPage extends StatelessWidget {
                                     }),
                               ]);
                             }),
-                         
                             Obx(() {
                               if (groupController.isLoading.value) {
                                 return const Center(
@@ -166,14 +161,13 @@ class GroupPage extends StatelessWidget {
     );
   }
 
-  
   Widget _buildGroupList(List<Map<String, String>> groups) {
     return ListView.separated(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       itemBuilder: (context, index) {
         final group = groups[index];
         return _buildGroupItem(
-          group['id']!, 
+          group['id']!,
           group['name']!,
           group['image']!,
         );
@@ -190,8 +184,8 @@ class GroupPage extends StatelessWidget {
     );
   }
 
-
   Widget _buildGroupItem(String id, String name, String imagePath) {
+    final groupController = Get.find<GroupsController>();
     return InkWell(
       onTap: () {
         Get.to(
@@ -206,15 +200,35 @@ class GroupPage extends StatelessWidget {
           children: [
             CircleAvatar(
               radius: 25,
-              backgroundImage: NetworkImage(imagePath),
+              backgroundImage: imagePath.isNotEmpty
+                  ? NetworkImage(imagePath)
+                  : const AssetImage(AppImageAsset.slider1) as ImageProvider,
             ),
             const SizedBox(width: 12),
-            Text(
-              name,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+            Expanded(
+              child: Text(
+                name,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.delete, color: Colors.red),
+              onPressed: () {
+                Get.defaultDialog(
+                  title: 'Delete Group',
+                  middleText: 'Are you sure you want to delete this group?',
+                  textConfirm: 'Yes',
+                  textCancel: 'No',
+                  confirmTextColor: Colors.white,
+                  onConfirm: () {
+                    groupController.deleteGroup(int.parse(id));
+                    Get.back(); // إغلاق نافذة التأكيد
+                  },
+                );
+              },
             ),
           ],
         ),

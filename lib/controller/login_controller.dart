@@ -44,9 +44,9 @@ class LoginController extends GetxController {
       );
 
       if (isAdmin) {
-        Get.off(() => SuberPage());
+        Get.to(() => SuperPage());
       } else {
-        Get.off(() => GroupPage());
+        Get.to(() => GroupPage());
       }
     } else {
       Get.snackbar(
