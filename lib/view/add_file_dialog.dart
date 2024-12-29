@@ -44,7 +44,7 @@ class AddFileDialog extends StatelessWidget {
 
             // حقل اسم الملف
             SizedBox(
-              width: screenWidth * 0.6, // 80% من عرض الشاشة
+              width: screenWidth * 0.6, // 60% من عرض الشاشة
               child: TextField(
                 controller: nameController,
                 decoration: const InputDecoration(
@@ -57,7 +57,7 @@ class AddFileDialog extends StatelessWidget {
 
             // حقل ملاحظات
             SizedBox(
-              width: screenWidth * 0.6, // 80% من عرض الشاشة
+              width: screenWidth * 0.6, // 60% من عرض الشاشة
               height: screenWidth * 0.1,
               child: TextField(
                 controller: notesController,

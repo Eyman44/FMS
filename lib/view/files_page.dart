@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constant/color.dart';
@@ -38,6 +37,66 @@ class GroupPageState extends State<GroupDetailesPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text("Add File"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                onChanged: (value) {
+                  fileName = value;
+                },
+                decoration: const InputDecoration(
+                  labelText: "File Name",
+                ),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () async {
+                  final result = await FilePicker.platform.pickFiles();
+                  if (result != null && result.files.first.bytes != null) {
+                    selectedFileBytes = result.files.first.bytes;
+                  }
+                },
+                child: const Text("Choose File"),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (fileName.isNotEmpty && selectedFileBytes != null) {
+                  controller.uploadFile(
+                    groupId: widget.id,
+                    fileName: fileName,
+                    fileBytes: selectedFileBytes!,
+                  );
+                  Navigator.pop(context);
+                } else {
+                  Get.snackbar(
+                      "Error", "Please fill all fields and choose a file.");
+                }
+              },
+              child: const Text("Upload"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+  void _showFileCheckOutDialog() {
+    String fileName = '';
+    Uint8List? selectedFileBytes;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Checkout File"),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -225,8 +284,11 @@ class GroupPageState extends State<GroupDetailesPage> {
                                         icon: const Icon(Icons.download,
                                             color: Colors.green),
                                         onPressed: () {
-                                          // استدعاء وظيفة التحميل هنا
-                                          Get.snackbar("Download",
+                                          controller.checkIn(
+                                              groupId: widget.id,
+                                              fileIds: [file.fileId],
+                                              );
+                                          Get.snackbar("Checking In",
                                               "Downloading ${file.file.name}");
                                         },
                                       ),
@@ -234,11 +296,7 @@ class GroupPageState extends State<GroupDetailesPage> {
                                       IconButton(
                                         icon: const Icon(Icons.upload,
                                             color: Colors.blue),
-                                        onPressed: () {
-                                          // استدعاء وظيفة الرفع هنا
-                                          Get.snackbar("Upload",
-                                              "Uploading ${file.file.name}");
-                                        },
+                                        onPressed: _showFileCheckOutDialog
                                       ),
                                       // أيقونة الحذف
                                       IconButton(

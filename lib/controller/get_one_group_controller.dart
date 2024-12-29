@@ -14,6 +14,52 @@ class GroupDetailsController extends GetxController {
 
   GroupDetailsController({required this.id});
 
+  Future<void> checkIn({
+    required int groupId,
+    required List<int> fileIds,
+  }) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('auth');
+
+      if (token == null) {
+        throw Exception('Token is null');
+      }
+
+      Uri url = Uri.parse("$baseurl/file/checkIn");
+
+      final response = await http.post(
+        url,
+        headers: {
+          "Authorization": token,
+          "Content-Type": "application/json",
+        },
+        body: json.encode({
+          "groupId": groupId.toString(),
+          "fileIds": fileIds.map((e) => e.toString()).toList(),
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['status'] == "Success") {
+          Get.snackbar("Success", data['data']);
+          print("Files downloaded successfully: ${data['data']}");
+        } else {
+          Get.snackbar("Error", "Failedd to download file: ${data['data']}");
+          print("Failed to download file: ${data['data']}");
+          print("Failed to download file: ${data['status']}");
+        }
+      } else {
+        throw Exception(
+            'Failed to download file. Status Code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error: $e');
+      Get.snackbar("Error", "An error occurred while downloading the file.");
+    }
+  }
+
   Future<void> fetchGroupDetails() async {
     try {
       isLoading(true);
@@ -54,6 +100,45 @@ class GroupDetailsController extends GetxController {
     } finally {
       isLoading(false);
       update();
+    }
+  }
+
+  Future<void> checkOut({
+    required int fileId,
+    required String fileName,
+    required Uint8List fileBytes,
+  }) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('auth');
+
+      if (token == null) {
+        throw Exception('Token is null');
+      }
+
+      Uri url = Uri.parse("$baseurl/file/checkOut");
+
+      var request = http.MultipartRequest('POST', url)
+        ..headers['Authorization'] = token
+        ..fields['fileId'] = fileId.toString()
+        ..fields['name'] = fileName
+        ..files.add(http.MultipartFile.fromBytes('file', fileBytes ,filename: fileName));
+
+      final response = await request.send();
+
+      if (response.statusCode == 200) {
+        Get.snackbar("Success", "File Checkedout successfully.");
+        print(
+            "Successsssssssssssssssssssssssssssssss File Checkedout successfully.");
+        fetchGroupDetails();
+      } else {
+        Get.snackbar("Error", "Failed to Upload the File.");
+        print(response.statusCode);
+        print( "Faileddddddddddddddddddddddddddddddddddd File Checkout .");
+      }
+    } catch (e) {
+      print('Error: $e');
+      Get.snackbar("Error", "An error occurred while uploading the file.");
     }
   }
 
