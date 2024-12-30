@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 class UploadRequestsController extends GetxController {
-  var isLoading = true.obs; // حالة التحميل
+  var isLoading = true.obs; 
   UploadRequestsResponse? uploadRequestsResponse;
 
   Future<void> fetchUploadRequests() async {

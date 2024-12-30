@@ -88,66 +88,6 @@ class GroupPageState extends State<GroupDetailesPage> {
       },
     );
   }
-  void _showFileCheckOutDialog() {
-    String fileName = '';
-    Uint8List? selectedFileBytes;
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Checkout File"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                onChanged: (value) {
-                  fileName = value;
-                },
-                decoration: const InputDecoration(
-                  labelText: "File Name",
-                ),
-              ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () async {
-                  final result = await FilePicker.platform.pickFiles();
-                  if (result != null && result.files.first.bytes != null) {
-                    selectedFileBytes = result.files.first.bytes;
-                  }
-                },
-                child: const Text("Choose File"),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text("Cancel"),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                if (fileName.isNotEmpty && selectedFileBytes != null) {
-                  controller.uploadFile(
-                    groupId: widget.id,
-                    fileName: fileName,
-                    fileBytes: selectedFileBytes!,
-                  );
-                  Navigator.pop(context);
-                } else {
-                  Get.snackbar(
-                      "Error", "Please fill all fields and choose a file.");
-                }
-              },
-              child: const Text("Upload"),
-            ),
-          ],
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -285,19 +225,102 @@ class GroupPageState extends State<GroupDetailesPage> {
                                             color: Colors.green),
                                         onPressed: () {
                                           controller.checkIn(
-                                              groupId: widget.id,
-                                              fileIds: [file.fileId],
-                                              );
+                                            groupId: widget.id,
+                                            fileIds: [file.fileId],
+                                          );
                                           Get.snackbar("Checking In",
                                               "Downloading ${file.file.name}");
                                         },
                                       ),
-                                      // أيقونة الرفع
+
                                       IconButton(
-                                        icon: const Icon(Icons.upload,
-                                            color: Colors.blue),
-                                        onPressed: _showFileCheckOutDialog
-                                      ),
+                                          icon: const Icon(Icons.upload,
+                                              color: Colors.blue),
+                                          onPressed:
+                                              // _showFileCheckOutDialog(file.fileId)
+                                              () {
+                                            String fileName = '';
+                                            Uint8List? selectedFileBytes;
+
+                                            showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  title: const Text(
+                                                      "Checkout File"),
+                                                  content: Column(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: [
+                                                      TextField(
+                                                        onChanged: (value) {
+                                                          fileName = value;
+                                                        },
+                                                        decoration:
+                                                            const InputDecoration(
+                                                          labelText:
+                                                              "File Name",
+                                                        ),
+                                                      ),
+                                                      const SizedBox(
+                                                          height: 10),
+                                                      ElevatedButton(
+                                                        onPressed: () async {
+                                                          final result =
+                                                              await FilePicker
+                                                                  .platform
+                                                                  .pickFiles();
+                                                          if (result != null &&
+                                                              result.files.first
+                                                                      .bytes !=
+                                                                  null) {
+                                                            selectedFileBytes =
+                                                                result
+                                                                    .files
+                                                                    .first
+                                                                    .bytes;
+                                                          }
+                                                        },
+                                                        child: const Text(
+                                                            "Choose File"),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        Navigator.pop(context);
+                                                      },
+                                                      child:
+                                                          const Text("Cancel"),
+                                                    ),
+                                                    ElevatedButton(
+                                                      onPressed: () {
+                                                        if (fileName
+                                                                .isNotEmpty &&
+                                                            selectedFileBytes !=
+                                                                null) {
+                                                          controller.checkOut(
+                                                            fileId: file.fileId,
+                                                            fileName: fileName,
+                                                            fileBytes:
+                                                                selectedFileBytes!,
+                                                          );
+                                                          Navigator.pop(
+                                                              context);
+                                                        } else {
+                                                          Get.snackbar("Error",
+                                                              "Please fill all fields and choose a file.");
+                                                        }
+                                                      },
+                                                      child:
+                                                          const Text("Upload"),
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          }),
                                       // أيقونة الحذف
                                       IconButton(
                                         icon: const Icon(Icons.delete,

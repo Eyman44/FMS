@@ -32,7 +32,6 @@ class GroupDetailsController extends GetxController {
         url,
         headers: {
           "Authorization": token,
-          "Content-Type": "application/json",
         },
         body: json.encode({
           "groupId": groupId.toString(),
@@ -122,7 +121,8 @@ class GroupDetailsController extends GetxController {
         ..headers['Authorization'] = token
         ..fields['fileId'] = fileId.toString()
         ..fields['name'] = fileName
-        ..files.add(http.MultipartFile.fromBytes('file', fileBytes ,filename: fileName));
+        ..files.add(http.MultipartFile.fromBytes('file', fileBytes,
+            filename: fileName));
 
       final response = await request.send();
 
@@ -134,7 +134,8 @@ class GroupDetailsController extends GetxController {
       } else {
         Get.snackbar("Error", "Failed to Upload the File.");
         print(response.statusCode);
-        print( "Faileddddddddddddddddddddddddddddddddddd File Checkout .");
+        print(response);
+        print("Faileddddddddddddddddddddddddddddddddddd File Checkout .");
       }
     } catch (e) {
       print('Error: $e');
@@ -180,52 +181,52 @@ class GroupDetailsController extends GetxController {
       Get.snackbar("Error", "An error occurred while uploading the file.");
     }
   }
-  
-Future<void> deleteFile({
-  required int groupId,
-  required int fileId,
-}) async {
-  try {
-    final prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('auth');
 
-    if (token == null) {
-      throw Exception('Token is null');
-    }
+  Future<void> deleteFile({
+    required int groupId,
+    required int fileId,
+  }) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('auth');
 
-    Uri url = Uri.parse("$baseurl/file/delete");
-
-    final response = await http.post(
-      url,
-      headers: {
-        "Authorization": token,
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: {
-        "groupId": groupId.toString(),
-        "fileId": fileId.toString(),
-      },
-    );
-
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      if (data['status'] == "Success") {
-        Get.snackbar("Success", "File deleted successfully.");
-        print("File deleted successfully.");
-        fetchGroupDetails(); // Refresh group details
-      } else {
-        Get.snackbar("Error", "Failed to delete file: ${data['message']}");
-        print("Failed to delete file: ${data['message']}");
+      if (token == null) {
+        throw Exception('Token is null');
       }
-    } else {
-      throw Exception(
-          'Failed to delete file. Status Code: ${response.statusCode}');
+
+      Uri url = Uri.parse("$baseurl/file/delete");
+
+      final response = await http.post(
+        url,
+        headers: {
+          "Authorization": token,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: {
+          "groupId": groupId.toString(),
+          "fileId": fileId.toString(),
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['status'] == "Success") {
+          Get.snackbar("Success", "File deleted successfully.");
+          print("File deleted successfully.");
+          fetchGroupDetails(); // Refresh group details
+        } else {
+          Get.snackbar("Error", "Failed to delete file: ${data['message']}");
+          print("Failed to delete file: ${data['message']}");
+        }
+      } else {
+        throw Exception(
+            'Failed to delete file. Status Code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error: $e');
+      Get.snackbar("Error", "An error occurred while deleting the file.");
     }
-  } catch (e) {
-    print('Error: $e');
-    Get.snackbar("Error", "An error occurred while deleting the file.");
   }
-}
 
   @override
   void onInit() {

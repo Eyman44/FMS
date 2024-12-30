@@ -10,6 +10,7 @@ import 'package:flutter_application_1/view/add_group.dart';
 import 'package:flutter_application_1/view/files_page.dart';
 import 'package:get/get.dart';
 
+// ignore: must_be_immutable
 class SuperPage extends StatelessWidget {
   SuperPage({super.key});
 
