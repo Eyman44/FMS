@@ -88,6 +88,67 @@ class GroupPageState extends State<GroupDetailesPage> {
       },
     );
   }
+  void _showFileCheckOutDialog(int fileId) {
+    String fileName = '';
+    Uint8List? selectedFileBytes;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Checkout File"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                onChanged: (value) {
+                  fileName = value;
+                },
+                decoration: const InputDecoration(
+                  labelText: "File Name",
+                ),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () async {
+                  final result = await FilePicker.platform.pickFiles();
+                  if (result != null && result.files.first.bytes != null) {
+                    selectedFileBytes = result.files.first.bytes;
+                  }
+                },
+                child: const Text("Choose File"),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (fileName.isNotEmpty && selectedFileBytes != null) {
+                  controller.checkOut(
+                    fileId: fileId,
+                    fileBytes: selectedFileBytes!,
+                    fileName: fileName,
+                  );
+                  Navigator.pop(context);
+                } else {
+                  Get.snackbar(
+                      "Error", "Please fill all fields and choose a file.");
+                }
+              },
+              child: const Text("Checkout"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -181,189 +242,100 @@ class GroupPageState extends State<GroupDetailesPage> {
                           ),
                         )
                       : GridView.builder(
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
-                            crossAxisSpacing: 10,
-                            mainAxisSpacing: 10,
-                            childAspectRatio: 0.75,
-                          ),
-                          itemCount: groupData.groupFiles.length,
-                          itemBuilder: (context, index) {
-                            final file = groupData.groupFiles[index];
-                            return Card(
-                              elevation: 5,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  // عرض صورة PDF
-                                  Expanded(
-                                    child: Image.asset(
-                                      AppImageAsset.pdf,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  // اسم الملف
-                                  Text(
-                                    file.file.name,
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(
-                                      color: AppColor.title,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  // الأيقونات (تحميل، رفع، حذف)
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      // أيقونة التحميل
-                                      IconButton(
-                                        icon: const Icon(Icons.download,
-                                            color: Colors.green),
-                                        onPressed: () {
-                                          controller.checkIn(
-                                            groupId: widget.id,
-                                            fileIds: [file.fileId],
-                                          );
-                                          Get.snackbar("Checking In",
-                                              "Downloading ${file.file.name}");
-                                        },
-                                      ),
-
-                                      IconButton(
-                                          icon: const Icon(Icons.upload,
-                                              color: Colors.blue),
-                                          onPressed:
-                                              // _showFileCheckOutDialog(file.fileId)
-                                              () {
-                                            String fileName = '';
-                                            Uint8List? selectedFileBytes;
-
-                                            showDialog(
-                                              context: context,
-                                              builder: (BuildContext context) {
-                                                return AlertDialog(
-                                                  title: const Text(
-                                                      "Checkout File"),
-                                                  content: Column(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    children: [
-                                                      TextField(
-                                                        onChanged: (value) {
-                                                          fileName = value;
-                                                        },
-                                                        decoration:
-                                                            const InputDecoration(
-                                                          labelText:
-                                                              "File Name",
-                                                        ),
-                                                      ),
-                                                      const SizedBox(
-                                                          height: 10),
-                                                      ElevatedButton(
-                                                        onPressed: () async {
-                                                          final result =
-                                                              await FilePicker
-                                                                  .platform
-                                                                  .pickFiles();
-                                                          if (result != null &&
-                                                              result.files.first
-                                                                      .bytes !=
-                                                                  null) {
-                                                            selectedFileBytes =
-                                                                result
-                                                                    .files
-                                                                    .first
-                                                                    .bytes;
-                                                          }
-                                                        },
-                                                        child: const Text(
-                                                            "Choose File"),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  actions: [
-                                                    TextButton(
-                                                      onPressed: () {
-                                                        Navigator.pop(context);
-                                                      },
-                                                      child:
-                                                          const Text("Cancel"),
-                                                    ),
-                                                    ElevatedButton(
-                                                      onPressed: () {
-                                                        if (fileName
-                                                                .isNotEmpty &&
-                                                            selectedFileBytes !=
-                                                                null) {
-                                                          controller.checkOut(
-                                                            fileId: file.fileId,
-                                                            fileName: fileName,
-                                                            fileBytes:
-                                                                selectedFileBytes!,
-                                                          );
-                                                          Navigator.pop(
-                                                              context);
-                                                        } else {
-                                                          Get.snackbar("Error",
-                                                              "Please fill all fields and choose a file.");
-                                                        }
-                                                      },
-                                                      child:
-                                                          const Text("Upload"),
-                                                    ),
-                                                  ],
-                                                );
-                                              },
-                                            );
-                                          }),
-                                      // أيقونة الحذف
-                                      IconButton(
-                                        icon: const Icon(Icons.delete,
-                                            color: Colors.red),
-                                        onPressed: () {
-                                          showDialog(
-                                            context: context,
-                                            builder: (BuildContext context) {
-                                              return AlertDialog(
-                                                title:
-                                                    const Text("Delete File"),
-                                                content: const Text(
-                                                    "Are you sure you want to delete this file?"),
-                                                actions: [
-                                                  TextButton(
-                                                    onPressed: () {
-                                                      Navigator.pop(context);
-                                                    },
-                                                    child: const Text("Cancel"),
-                                                  ),
-                                                  ElevatedButton(
-                                                    onPressed: () {
-                                                      controller.deleteFile(
-                                                        groupId: widget.id,
-                                                        fileId: file.fileId,
-                                                      );
-                                                      Navigator.pop(context);
-                                                    },
-                                                    child: const Text("Delete"),
-                                                  ),
-                                                ],
-                                              );
-                                            },
-                                          );
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      childAspectRatio: 0.75,
+                    ),
+                    itemCount: groupData.groupFiles.length,
+                    itemBuilder: (context, index) {
+                      final file = groupData.groupFiles[index];
+                      return Card(
+                        elevation: 5,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Image.asset(
+                                AppImageAsset.pdf,
+                                fit: BoxFit.cover,
                               ),
-                            );
-                          },
-                        )),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              file.file.name,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                color: AppColor.title,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.download, color: Colors.green),
+                                  onPressed: () {
+                                    controller.checkIn(
+                                      groupId: widget.id,
+                                      fileIds: [file.fileId],
+                                    );
+                                    Get.snackbar(
+                                      "Checking In",
+                                      "Downloading ${file.file.name}",
+                                    );
+                                  },
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.upload, color: Colors.blue),
+                                  onPressed: () {
+                                    _showFileCheckOutDialog(file.fileId);
+                                  },
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.delete, color: Colors.red),
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: const Text("Delete File"),
+                                          content: const Text(
+                                              "Are you sure you want to delete this file?"),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              child: const Text("Cancel"),
+                                            ),
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                controller.deleteFile(
+                                                  groupId: widget.id,
+                                                  fileId: file.fileId,
+                                                );
+                                                Navigator.pop(context);
+                                              },
+                                              child: const Text("Delete"),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  )
+
+              ),
             ),
           ],
         );

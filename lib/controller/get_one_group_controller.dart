@@ -32,6 +32,7 @@ class GroupDetailsController extends GetxController {
         url,
         headers: {
           "Authorization": token,
+          "Content-Type": "application/json",
         },
         body: json.encode({
           "groupId": groupId.toString(),
@@ -119,10 +120,10 @@ class GroupDetailsController extends GetxController {
 
       var request = http.MultipartRequest('POST', url)
         ..headers['Authorization'] = token
+        ..headers['Content-Type'] = 'multipart/form-data'
         ..fields['fileId'] = fileId.toString()
-        ..fields['name'] = fileName
-        ..files.add(http.MultipartFile.fromBytes('file', fileBytes,
-            filename: fileName));
+        ..files.add(http.MultipartFile.fromBytes('file', fileBytes ,filename: fileName))
+        ..fields['name'] = fileName;
 
       final response = await request.send();
 
@@ -134,8 +135,7 @@ class GroupDetailsController extends GetxController {
       } else {
         Get.snackbar("Error", "Failed to Upload the File.");
         print(response.statusCode);
-        print(response);
-        print("Faileddddddddddddddddddddddddddddddddddd File Checkout .");
+        print( "Faileddddddddddddddddddddddddddddddddddd File Checkout .");
       }
     } catch (e) {
       print('Error: $e');
