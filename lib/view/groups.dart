@@ -9,6 +9,8 @@ import 'package:flutter_application_1/view/add_group.dart';
 import 'package:flutter_application_1/view/files_page.dart';
 import 'package:get/get.dart';
 
+import '../controller/group_edit_contoller.dart';
+
 class GroupPage extends StatelessWidget {
   GroupPage({super.key});
 
@@ -227,6 +229,15 @@ class GroupPage extends StatelessWidget {
                     groupController.deleteGroup(int.parse(id));
                     Get.back(); // إغلاق نافذة التأكيد
                   },
+                );
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.edit, color: Colors.deepPurpleAccent),
+              onPressed: () {
+                showEditGroupDialog(
+                  Get.context!,
+                  int.parse(id),
                 );
               },
             ),
