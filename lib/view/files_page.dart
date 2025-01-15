@@ -9,6 +9,9 @@ import 'package:flutter_application_1/controller/get_one_group_controller.dart';
 import 'package:flutter_application_1/view/member_page.dart';
 import 'package:get/get.dart';
 
+import '../controller/fetch_file_info_controller.dart';
+import 'fetch_file_info_dialog.dart';
+
 class GroupDetailesPage extends StatefulWidget {
   final int id;
 
@@ -325,6 +328,17 @@ class GroupPageState extends State<GroupDetailesPage> {
                                         );
                                       },
                                     );
+                                  },
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.more_vert, color: Colors.deepPurpleAccent),
+                                  onPressed: () {
+                                    if (Get.isRegistered<FileInfoController>()) {
+                                      Get.delete<FileInfoController>();
+                                    }
+                                    Get.put(FileInfoController(fileId: file.fileId));
+
+                                    showFileInfoDialog(context, file.fileId);
                                   },
                                 ),
                               ],
