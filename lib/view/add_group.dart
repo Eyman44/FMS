@@ -51,23 +51,23 @@ void showAddGroupDialog(BuildContext context) {
                   ),
                   const SizedBox(height: 10),
                 ],
-                ElevatedButton(
-                  onPressed: () async {
-                    // اختيار الصورة باستخدام مكتبة file_picker
-                    FilePickerResult? result = await FilePicker.platform.pickFiles(
-                      type: FileType.image,
-                    );
-
-                    if (result != null && result.files.single.path != null) {
-                      setState(() {
-                        selectedImage = File(result.files.single.path!);
-                      });
-                    } else {
-                      print("No image selected.");
-                    }
-                  },
-                  child: const Text('Choose Image'),
-                ),
+                // ElevatedButton(
+                //   onPressed: () async {
+                //     // اختيار الصورة باستخدام مكتبة file_picker
+                //     FilePickerResult? result = await FilePicker.platform.pickFiles(
+                //       type: FileType.image,
+                //     );
+                //
+                //     if (result != null && result.files.single.path != null) {
+                //       setState(() {
+                //         selectedImage = File(result.files.single.path!);
+                //       });
+                //     } else {
+                //       print("No image selected.");
+                //     }
+                //   },
+                //   child: const Text('Choose Image'),
+                // ),
               ],
             ),
             actions: [
@@ -170,22 +170,22 @@ void showEditGroupDialog(BuildContext context, int groupId) {
                     ),
                     const SizedBox(height: 10),
                   ],
-                  ElevatedButton(
-                    onPressed: () async {
-                      FilePickerResult? result = await FilePicker.platform.pickFiles(
-                        type: FileType.image,
-                      );
-
-                      if (result != null && result.files.single.path != null) {
-                        setState(() {
-                          selectedImage = File(result.files.single.path!);
-                        });
-                      } else {
-                        print("No image selected.");
-                      }
-                    },
-                    child: const Text('Choose Image'),
-                  ),
+                  // ElevatedButton(
+                  //   onPressed: () async {
+                  //     FilePickerResult? result = await FilePicker.platform.pickFiles(
+                  //       type: FileType.image,
+                  //     );
+                  //
+                  //     if (result != null && result.files.single.path != null) {
+                  //       setState(() {
+                  //         selectedImage = File(result.files.single.path!);
+                  //       });
+                  //     } else {
+                  //       print("No image selected.");
+                  //     }
+                  //   },
+                  //   child: const Text('Choose Image'),
+                  // ),
                 ],
               ),
             ),
